@@ -21,7 +21,7 @@
     "node-man": "^0.6.15",
     "nodeman": "^1.1.2",
     "supertest": "^2.0.0",
-    "ws": "^1.1.1",
+    "ws": "^1.1.1"
     
   },
   "devDependencies": {
