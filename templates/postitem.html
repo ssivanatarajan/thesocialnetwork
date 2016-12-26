@@ -1,0 +1,43 @@
+<div>
+
+<ul class="list-group" >
+       <li class="list-group-item borderless"> <strong>{{ postObj.username }}</strong></li>
+        <li class="list-group-item borderless"><span><pre>{{ postObj.body}}</pre></span></li>
+       	<hr>
+        <div ng-show='postObj.likes > 0'>
+      <li class="list-group-item borderless"  >
+       <div class="horizontal-list">
+        <!--<div class="horizontal-list-item"><a hret='#'><i class="fa fa-thumbs-up" ></i>{{postObj.likes}} Likes</a></div> -->
+        <div class="horizontal-list-item"><a hret='#'><i class="fa fa-thumbs-up" ></i> {{postObj.LikedBY}} </a></div>
+       </div>
+      </li> 
+      <hr>
+      </div>
+      
+       <li class="list-group-item borderless"> 
+        <div class='horizontal-list'>
+       <div class='horizontal-list-item'><a href='#' ng-click='like(postObj)' ng-class=" postObj.isliked =='True' ? 'liked' :'not-liked'"   aria-pressed="true"><i class="fa fa-thumbs-up" aria-hidden="true"> Like </i> </a> </div>
+        <div class='horizontal-list-item'> <a href='#' ng-click='showorhideComments(postObj)' ng-class=" postObj.showComments =='True' ? 'liked' :'not-liked'"   aria-pressed="true"><i class="fa fa-comment" aria-hidden="true"> comment  </i> </a> </div>
+        </div>
+       </li>
+
+       <div class="commentsContainer" ng-show="postObj.showComments =='True'">
+       
+       <div class="commentsList" ng-show='postObj.comments.length >0'>
+       <hr>
+       <li class="list-group-item borderless " ng-repeat="comment in postObj.comments | orderBy:'-date' ">
+        <div  ><pre><strong>{{comment.commentedby}} </strong> <span>{{comment.comment}} </span></pre></div>
+      </li>
+      </div>
+       <hr>
+       <li class="list-group-item borderless"  >
+       <div class="horizontal-list">
+       <textarea type='text'  name='newComment' class="commenttxt" ng-model='postObj.newComment' rows="2" style="resize:none"/>
+       <a  href='#'  ng-click='addComment(postObj)'><i class="fa fa-paper-plane fa-rotate-45" aria-hidden="true"></i></a>
+       </div>
+       </li>
+       </div>
+
+     
+    </ul>
+</div>

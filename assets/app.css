@@ -1,0 +1,41 @@
+h1. {
+  color: #f00;
+}
+body {
+  color: #00f;
+}
+.red {
+  color: #f00;
+}
+li.borderless {
+  border: none;
+}
+li.topmargin {
+  margin: 10px 0;
+}
+.navbar-default {
+  background-color: #2ecc71;
+  border-color: #fff;
+  color: #fff;
+}
+.navbar-default .navbar-nav > .dropdown > a .caret {
+  border-top-color: #fff;
+}
+border-bottom-color #fff,
+navbar-default .navbar-nav > .open > a {
+  color: #fff;
+  background-color: #2ecc71;
+}
+ul.nav.navbar-nav > li >a {
+  color: #fff;
+}
+.navbar-default .navbar-brand {
+  color: #fff;
+}
+.navbar-collapse {
+  text-align: center;
+}
+.usernameSpan {
+  color: #fff;
+  font-size: 24px;
+}

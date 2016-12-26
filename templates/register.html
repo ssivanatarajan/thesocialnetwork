@@ -1,0 +1,68 @@
+<div class="container">
+
+<div class="col-sm-6 col-sm-offset-3" >
+    
+    <!-- PAGE HEADER -->
+    <div class="page-header"><h1>Registration</h1></div>
+   
+    <!-- FORM -->
+    <!-- pass in the variable if our form is valid or invalid -->
+    <form name="userForm" ng-submit="register(username,password,email,mobile,dob)" novalidate> <!-- novalidate prevents HTML5 validation since we will be validating ourselves -->
+
+      	
+
+	<!-- USERNAME -->
+	<div class="form-group" ng-class="{ 'has-error' : (userForm.username.$invalid && !userForm.username.$pristine )||(userForm.mobile.$invalid && !userForm.mobile.$pristine)|| (userForm.email.$invalid && !userForm.email.$pristine) || !usernameAvailable || !mobileNoAvailable || !emailAvailable}">
+  		<label>Username</label>
+  		<input type="text" name="username" class="form-control" ng-model="username" ng-minlength="3" ng-maxlength="15" ng-change="checkAvailabilty('username',username)"  required>
+  		<p ng-show="userForm.username.$error.minlength" class="help-block">Username is too short.</p>
+  		<p ng-show="userForm.username.$error.maxlength" class="help-block">Username is too long.</p>
+
+      <p ng-show=' !userForm.username.$error.minlength && !userForm.username.$error.maxlength && usernameAvailable  && !userForm.username.$pristine ' class="help-block">Username is Available</p>
+      <p ng-show='!userForm.username.$error.minlength && !userForm.username.$error.maxlength && !usernameAvailable && !userForm.username.$pristine' class="help-block">Username is not Available</p>
+	</div>
+
+	<!-- EMAIL -->
+	<div class="form-group" ng-class="{ 'has-error' : userForm.email.$invalid && !userForm.email.$pristine }">
+  		<label>Email</label>
+  		<input type="email" name="email" class="form-control" ng-model="email" ng-change="checkAvailabilty('email',email)" required>
+  		<p ng-show="userForm.email.$invalid && !userForm.email.$pristine" class="help-block">Enter a valid email.</p>
+       <p ng-show='!userForm.email.$invalid && !emailAvailable && !userForm.email.$pristine' class="help-block">Email id is already registered</p>
+	</div>
+  <!-- Mobile No -->
+  <div class="form-group" ng-class="{ 'has-error' :  !userForm.mobile.$pristine || userForm.mobile.$error.minlength || userForm.mobile.$error.maxlength}">
+      <label>Mobile No</label>
+      <input type="number" name="mobile" class="form-control" ng-model="mobile" ng-minlength="10" ng-maxlength="10" maxlength="10" ng-change="checkAvailabilty('mobile',mobile)" required>
+      <p ng-show='!userForm.mobile.$error.minlength && !userForm.mobile.$invalid && !userForm.mobile.$error.maxlength && !mobileNoAvailable && !userForm.mobile.$pristine' class="help-block">mobile no is already registered</p>
+      
+      
+      <p ng-show="userForm.mobile.$invalid && !userForm.mobile.$pristine" class="help-block">Invalid Mobile No</p>
+  </div>
+
+	<!--DOB-->
+	<div class="form-group" ng-class="{ 'has-error' : userForm.date.$invalid && !userForm.date.$pristine }">
+    	<label > Date of birth</label>
+    	<input type="date" name="dob" class="form-control" ng-model="dob" required>
+    	<p ng-show="userForm.dob.$invalid && !userForm.dob.$pristine" class="help-block">Age must be greater than 18.</p>
+    </div>
+	<!-- Password-->
+    <div class="form-group" ng-class="{ 'has-error' : userForm.password.$invalid && !userForm.password.$pristine }">
+      <label >Password</label>
+      <input type="password" name="password" class="form-control" ng-model="password" ng-minlength="8" required>
+      <span ng-show="userForm.password.$error.minlength && !userForm.password.$pristine" class="help-block">password is too short</span>
+    </div>
+    <!-- confirm Password-->
+    <div class="form-group" ng-class="{ 'has-error' : userForm.retypepassword.$invalid && !userForm.retypepassword.$pristine }">
+      <label >Retype Password</label>
+      <input type="password" name="retypepassword" class="form-control" ng-model="retypepassword" ng-match="password" ng-minlength="8" required>
+       <span data-ng-show="userForm.retypepassword.$error.match && !userForm.retypepassword.$pristine" class="help-block">password is mismatch</span>
+       <span ng-show="userForm.retypepassword.$error.minlength && !userForm.retypepassword.$pristine" class="help-block">Password is too short</span>
+    </div>
+        
+    <!-- SUBMIT BUTTON -->
+    <button type="submit" class="btn btn-primary" ng-disabled="userForm.$invalid">Submit</button>
+        
+  </form>
+  </div> <!-- col-sm-8 -->
+
+</div> <!-- container -->
