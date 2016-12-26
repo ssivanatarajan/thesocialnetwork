@@ -3,10 +3,10 @@ var bcrypt = require('bcryptjs')
 var jwt = require('jwt-simple')
 var User = require('../../models/user')
 var config = require('../../config')
-var Mailgun = require('mailgun-js')
+
 var ObjectID = require('mongodb').ObjectID;
-var api_key = '6bc114a36130ce2ce1f1c149e03ea93f'
-var from_who = 'ssivanatarajan@mailgun.com'
+/*var api_key = '6bc114a36130ce2ce1f1c149e03ea93f'
+var from_who = 'ssivanatarajan@mailgun.com'*/
 router.get('/:checkAvailabilityType',function (req,res,next) {
   // body...
   var checkType=req.params.checkAvailabilityType
