@@ -581,8 +581,9 @@ svc.checkAvailabilty=function(type,value)
 angular.module('app')
 .run(function ($rootScope, $timeout) {
   (function connect() {
-    var url = 'ws://192.168.43.44:3000'
-    var connection = new WebSocket(url)
+    var HOST = location.origin.replace(/^http/, 'ws')
+    
+    var connection = new WebSocket(HOST)
     connection.onclose = function (e) {
       console.log('WebSocket closed. Reconnecting...')
       $timeout(connect, 10*1000)
