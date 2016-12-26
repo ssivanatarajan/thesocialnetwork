@@ -1,5 +1,5 @@
 {
-  "name": "socialapp",
+  "name": "eiger",
   "dependencies": {
     "bcryptjs": "^2.3.0",
     "blanket": "^1.2.3",
