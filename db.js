@@ -1,6 +1,6 @@
 var mongoose=require("mongoose");
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost/social', function () {
+mongoose.connect('mongodb://siva:siva@ds145148.mlab.com:45148/eiger', function () {
   console.log('mongodb connected')
 });
 module.exports = mongoose;
