@@ -212,10 +212,11 @@ else{
 router.post('/:postId',function(req,res,next)
 {
   var postID=req.params.postId;
-  var commentedBy=req.query.userId;
+  var commentedBy_Id=req.query.userId;
+  var commentedBy_Name=req.query.userName;
   var comment=req.query.comment
-  console.log('addcomment in',postID +' '+commentedBy+' '+comment )
-Post.update({ _id : postID},{$push:{comments:{ 'comment':comment,'commentedby':commentedBy,'date':new Date()}}},function(err,data){
+  console.log('addcomment in',postID +' '+commentedBy_Id+''+ commentedBy_Name+' '+comment )
+Post.update({ _id : postID},{$push:{comments:{ 'comment':comment,'commentedby_id':commentedBy_Id,'commentedby_name':commentedBy_Name,'date':new Date()}}},function(err,data){
   if(err){
     console.log(err)
     res.json({'msg':'unable to post comment'})

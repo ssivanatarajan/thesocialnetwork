@@ -12,10 +12,17 @@ if($scope.currentUser)
 }
 $scope.$on('ws:new_post', function (_, post) {
   $scope.$apply(function () {
-    post.username=$scope.currentUser.username;
-    console.log('post.username', post.username);
-    $scope.posts.unshift(post)
-    console.log('web socket',post)
+  	UserSvc.getUsername(post.userid).then(function(res){
+          var username=res.username;
+          post.username=username;
+          console.log('username',username);  
+          console.log('post.username', post.username);
+    		$scope.posts.unshift(post)
+    		console.log('web socket',post)
+        })
+
+    
+    
   })
 })
 

@@ -26,7 +26,7 @@
        <div class="commentsList" ng-show='postObj.comments.length >0'>
        <hr>
        <li class="list-group-item borderless " ng-repeat="comment in postObj.comments | orderBy:'-date' ">
-        <div  ><pre><strong>{{comment.commentedby}} </strong> <span>{{comment.comment}} </span></pre></div>
+        <div  ><pre><strong>{{comment.commentedby_name}} </strong> <span>{{comment.comment}} </span></pre></div>
       </li>
       </div>
        <hr>

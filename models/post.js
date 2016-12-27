@@ -4,7 +4,7 @@ var Post = db.model('Post', {
   body:     { type: String, required: true },
   date:     { type: Date, required: true, default: Date.now },
   likes :{type:Number,default:0},
-  comments:{comment:String,commentedby:String,date:Date},
+  comments:{comment:String,commentedby_id:String,commentedby_name:String,date:Date},
   likedBY:{type:String}
 
 })

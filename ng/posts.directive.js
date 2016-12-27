@@ -21,6 +21,7 @@ angular.module('app').directive('postitem',function(){
 	}
   directive.controller=function($scope,$element,UserSvc,PostsSvc){
   	var userid=UserSvc.currentUser._id;
+
   	$scope.like=function(post)
       {
        
@@ -81,13 +82,14 @@ angular.module('app').directive('postitem',function(){
 		console.log('post.newComment',post.newComment)
     if(post.newComment)
     {
-		PostsSvc.addComment(post._id,post.newComment,userid).then(function(res){
+      var username=UserSvc.currentUser.username;
+		PostsSvc.addComment(post._id,post.newComment,userid,username).then(function(res){
  			console.log(res)
  			if(res.data.msg=='comment posted successfully')
  			{
  				if(!angular.isDefined(post.comments))
  					post.comments=[]
- 				var cmnt={'comment':post.newComment,'commentedby':userid}
+ 				var cmnt={'comment':post.newComment,'commentedby_id':userid,'commentedby_name':username}
  				post.comments.unshift(cmnt)
  				post.newComment=''
  			}
@@ -95,14 +97,14 @@ angular.module('app').directive('postitem',function(){
 		})
 }
   }
-  $scope.auto_grow= function (msg,$event) {
+  /*$scope.auto_grow= function (msg,$event) {
   	//console.log('element',element)
   	element=event.target
   	console.log(element.attributes)
   	element.attributes.rows='2'
     /*element.style.height = "5px";
-    element.style.height = (element.scrollHeight)+"px";*/
-}
+    element.style.height = (element.scrollHeight)+"px";
+}*/
 
 }
 	return directive

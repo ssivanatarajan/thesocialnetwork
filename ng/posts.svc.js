@@ -24,8 +24,8 @@
       return val.data;
     })*/
   }
-  this.addComment=function(postid,comment,userid){
-    return $http.post('api/posts/'+postid+'?comment='+comment+'&userId='+userid).then(function(commentRes,err){
+  this.addComment=function(postid,comment,userid,username){
+    return $http.post('api/posts/'+postid+'?comment='+comment+'&userId='+userid+'&userName='+username).then(function(commentRes,err){
       if(err)
         console.log('err',err)
       else
