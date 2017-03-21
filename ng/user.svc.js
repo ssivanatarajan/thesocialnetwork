@@ -53,7 +53,7 @@ angular.module('app')
     })
   }
   svc.logout=function(){
-    alert("logout")
+    
     svc.token=""
     $window.localStorage.clear()
   }

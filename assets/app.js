@@ -99,7 +99,9 @@ angular.module('app')
     	//var res=JSON.stringify(response)
     	 console.log("LoginCtrl  ", response.data );
 
-    	 	
+    	var message = '<strong> welcome!</strong>  successfully logged in.';
+      $('#Flash_message').css({'box-shadow':'0 0 30px black','text-align':'center','padding-top':'2px','padding-bottom':'2px'}).html(message).addClass('alert-success').show().delay(30000).fadeOut();
+      	
     	 	//var json=JSON.parse(response);
     	//console.log("LoginCtrl data"+json.data);
       $scope.$emit('login', response.data)  
@@ -123,13 +125,7 @@ angular.module('app')
                         .textContent('Invalid username or password').position('top right')                      
                         .hideDelay(5000))*/
        }
-       else
-       {
-       	var message = '<strong> welcome!</strong>  successfully logged in.';
-    	$('#Flash_message').html(message).addClass('alert-success').show().delay(30000).fadeOut();
-    	
-       }
-
+      
     })
    
   }
@@ -275,7 +271,7 @@ $scope.$on('ws:new_post', function (_, post) {
 
   PostsSvc.fetch()
 	.success(function (posts) {
-  	
+  	$scope.posts=posts;
     console.log('posts',posts)
    var modifiedPosts=[];
     //for (var i=0; i < posts.length; i++) {
@@ -706,7 +702,7 @@ angular.module('app')
     })
   }
   svc.logout=function(){
-    alert("logout")
+    
     svc.token=""
     $window.localStorage.clear()
   }

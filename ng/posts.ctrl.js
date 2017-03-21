@@ -108,7 +108,7 @@ $scope.$on('ws:new_post', function (_, post) {
 
   PostsSvc.fetch()
 	.success(function (posts) {
-  	
+  	$scope.posts=posts;
     console.log('posts',posts)
    var modifiedPosts=[];
     //for (var i=0; i < posts.length; i++) {

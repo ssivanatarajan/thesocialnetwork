@@ -3,7 +3,7 @@
  <div class='container'>
 
  <div class='col-lg-8 col-lg-offset-2' >
-    <h1 class="red">Recent Posts</h1>
+    <h1 class="red"></h1>
     <form role='form'>
       <fieldset class="input-group-vertical">
 
@@ -13,19 +13,12 @@
          <textarea ng-model='postBody'  class="form-control custom-control" rows="3" style="resize:none"></textarea>       
         </div>
           
-          <div class='input-group'>
-          <span class='input-group-btn'>
-          <button ng-click='addPhoto()' id='addPhoto' class='btn btn-success form-control' ng-disabled='!currentUser'> Add Photo</button>
-          </span>
-          <span class='input-group-btn'>
-            <button ng-click='addPost()' id='addPost' class='btn btn-success form-control' ng-disabled='!currentUser'>Add Post</button>
-          </span>
-        </div>
-        
+  <button ng-click='addPost()' id='addPost' class='btn btn-success pull-right' ng-disabled='!currentUser'>Add Post</button>
+          
         </fieldset>
       </form>
 
-    <ul class='list-group'>
+    <ul class='list-group' ng-hide='!currentUser'>
     <div infinite-scroll="loadMorePosts()" infinite-scroll-distance="3">
       <li ng-repeat="post in posts | orderBy:'-date'" class='list-group-item  topmargin'  >
         <postitem postdata='{{post}}'></postitem>
