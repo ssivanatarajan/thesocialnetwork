@@ -1,0 +1,50 @@
+<div class="container" ng-init='getTowers()'>
+
+<div class="col-sm-6 col-sm-offset-3" >
+    
+    <p id="Flash_message" class="alert"> </p>
+    <!-- PAGE HEADER -->
+    <div class="page-header"><h1>Add Application</h1></div>
+   
+    <!-- FORM -->
+    <!-- pass in the variable if our form is valid or invalid -->
+    <form name="addAppsForm" ng-submit="addApplication(appName,alias,Category,tower.towerId)" ng-class="{ 'has-error' : (addAppsForm.username.$invalid && !addAppsForm.username.$pristine )||(addAppsForm.mobile.$invalid && !addAppsForm.mobile.$pristine)|| (addAppsForm.email.$invalid && !addAppsForm.email.$pristine)||(addAppsForm.retypepassword.$error.pwmatch && !addAppsForm.retypepassword.$pristine) || !usernameAvailable || !mobileNoAvailable || !emailAvailable}" novalidate>
+     <!-- novalidate prevents HTML5 validation since we will be validating ourselves -->
+<div class="form-group" ng-class="{ 'has-error' : (addAppsForm.appName.$invalid && !addAppsForm.appName.$pristine )}">
+  
+      <label>App Name</label>
+      <input type="text" name="appName" class="form-control" ng-model="appName"    required>
+</div>
+
+<!-- Alias -->
+	<div class="form-group" ng-class="{ 'has-error' : (addAppsForm.alias.$invalid && !addAppsForm.alias.$pristine )}">
+  
+  		<label>Alias</label>
+  		<input type="text" name="alias" class="form-control" ng-model="alias"   required>
+	</div>
+
+	<!-- Category -->
+	<div class="form-group" ng-class="{ 'has-error' : addAppsForm.email.$invalid && !addAppsForm.email.$pristine }">
+  		<label>Category</label>
+  		<select  name="Category" class="form-control" ng-model="Category"   required>
+      <option value='platinum'>Platinum</option>
+      <option value='gold'>Gold</option>
+      <option value='silver'>Silver</option>
+      <option value='bronze'>Bronze</option>
+      </select>
+  		</div>
+  
+<div class="form-group " ng-class="{ 'has-error' :  !addAppsForm.primarySupport.$pristine || addAppsForm.primarySupport.$error.minlength || addAppsForm.primarySupport.$error.maxlength}">
+    <label>Tower</label>
+      <select  name="tower" class="form-control" ng-model="tower"   ng-options='t.name for t in towers' required>
+        {{tower}}
+      </select>
+      </div> 
+	      
+    <!-- SUBMIT BUTTON -->
+    <button type="submit" class="btn btn-primary" ng-disabled="addAppsForm.$invalid">Submit</button>
+        
+  </form>
+  </div> <!-- col-sm-8 -->
+
+</div> <!-- container -->

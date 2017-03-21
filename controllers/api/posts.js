@@ -3,7 +3,7 @@ var router = require('express').Router()
 var websocket=require('../../websockets')
 var ObjectID = require('mongodb').ObjectID;
 var User=require('../../models/user')
-
+var Counter = require('../../models/counter')
 
 //getting likestats
 router.get('/:postId',function(req,res,next)
@@ -76,13 +76,6 @@ router.get('/:postId',function(req,res,next)
    }) 
 
   }) 
-
-  
-
-
-   
-  
-
   //res.json({'msg':'liked-stats'})
   //'recentlyLikedUserName':recentlyliked_username})
 })
@@ -199,11 +192,17 @@ else{
     body: req.body.body
   })
   console.log("post"+req);
+Counter.findOneAndUpdate({name:'Posts'}, {$inc : {next:1}},function(err,d){
+    post.postId=d.next
+   
   post.save(function (err, post) {
     if (err) { return next(err) }
      websocket.broadcast('new_post',post) 
+  /* req.flash('info','successfully posted')
+   res.render('flash.html')*/
     res.status(201).json(post);
   })
+})
 }
 })
 

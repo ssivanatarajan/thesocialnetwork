@@ -1,5 +1,5 @@
 angular.module('app')
-.controller('ApplicationCtrl', function ($scope,$window,UserSvc) {
+.controller('ApplicationCtrl', function ($scope,$window,UserSvc,AppsSvc) {
  
  if($window.localStorage && $window.localStorage.getItem('token'))
     {
@@ -26,6 +26,7 @@ angular.module('app')
     console.log("currentUser"+$scope.currentUser)
     console.log("ApplicationCtrl",user);
   })
+  
   $scope.logout=function(){
   	UserSvc.logout()
   	$scope.currentUser="";

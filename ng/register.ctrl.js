@@ -1,18 +1,27 @@
 angular.module('app').
-controller('RegisterCtrl',function($scope,UserSvc,$window,$mdToast)
+controller('RegisterCtrl',function($scope,UserSvc,$window)
 {
-$scope.register=function(username,password,mobile,email,dob)
+$scope.register=function(username,empId,password,mobile,email,dob)
 {
-	UserSvc.register(username,password,mobile,email,dob).then(function(res)
+	UserSvc.register(username,empId,password,mobile,email,dob).then(function(res)
 	{
 		console.log("reg",res);
 		if(res.status==201)
 		{
-			$mdToast.show(
+			var message = '<strong> Welcome!</strong>  successfully Registered.';
+    	$('#Flash_message').html(message).addClass('alert-success').show().delay(30000).fadeOut();
+    	
+			
+
+			/*$mdToast.show(
                      $mdToast.simple()
                         .textContent('successfully !').position('top right')                      
-                        .hideDelay(5000))
-			window.location.href='./#/login'
+                        .hideDelay(5000))*/
+			UserSvc.login(username,password).then(function(responseData){
+				$scope.$emit('login', responseData.data)
+				window.location.href='./'
+			})
+			//window.location.href='./#/login'
 
 
 		}

@@ -59,7 +59,7 @@ $scope.$on('ws:new_post', function (_, post) {
       $scope.addPost = function () {
 
         // Only add a post if there is a body
-        console.log('userid',userid)
+        userid=$scope.currentUser._id;
       if($scope.postBody)
         PostsSvc.create({
       userid: userid,

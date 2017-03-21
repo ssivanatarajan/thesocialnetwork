@@ -12,6 +12,18 @@ angular.module('app')
     })
   }
 
+  svc.getProfile=function(userid)
+  {
+    console.log('get','profile')
+    return $http.get('api/profile',{params:{userid:userid}}).then(function(val){
+      console.log('profile',val);
+      console.log('profile',val.data);
+      return val
+
+    },function(err){
+      console.log('profile',err);
+    })
+  }
   svc.getUsername=function(userid)
   {
     return $http.get('/api/users',{params:{userid:userid}}).then(function(val){
@@ -31,16 +43,17 @@ angular.module('app')
       return svc.getUser(svc.token)
     })
   }
-   svc.register=function(username,password,email,mobile,dob)
+   svc.register=function(username,empId,password,email,mobile,dob)
     {
       console.log("user Svc Reg")
-    return $http.post('/api/users',{username:username,password:password,email:email,mobile:mobile,dob:dob}).then(function(val){
+    return $http.post('/api/users',{username:username,empId:empId,password:password,email:email,mobile:mobile,dob:dob}).then(function(val){
       console.log("user reg",val)
       return val
 
     })
   }
   svc.logout=function(){
+    alert("logout")
     svc.token=""
     $window.localStorage.clear()
   }
@@ -55,6 +68,15 @@ svc.checkAvailabilty=function(type,value)
   function (error) {
     // body...
     console.log(error)
+  })
+}
+
+svc.forgotPassword=function(mobileNo)
+{
+  return $http.get('/api/forgotPassword',{params:{mobileNo:mobileNo}}).then(function(val){
+    console.log('val',val)
+  },function(err){
+    console.log('err',err)
   })
 }
 

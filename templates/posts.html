@@ -1,10 +1,13 @@
  <link rel="stylesheet" href="/posts.css">
+ <script type='text/javascript' src='/ng-infinite-scroll.min.js'></script>
  <div class='container'>
 
  <div class='col-lg-8 col-lg-offset-2' >
     <h1 class="red">Recent Posts</h1>
     <form role='form'>
       <fieldset class="input-group-vertical">
+
+      
       <div class='form-group'>
         <!--<textarea ng-model='postBody' ng-keyup='auto_grow(this)' class="form-control custom-control" rows="2" style="resize:none"></textarea>     -->
          <textarea ng-model='postBody'  class="form-control custom-control" rows="3" style="resize:none"></textarea>       
@@ -23,10 +26,11 @@
       </form>
 
     <ul class='list-group'>
+    <div infinite-scroll="loadMorePosts()" infinite-scroll-distance="3">
       <li ng-repeat="post in posts | orderBy:'-date'" class='list-group-item  topmargin'  >
         <postitem postdata='{{post}}'></postitem>
       </li>
-
+</div>
     </ul>
   </div>
   </div>

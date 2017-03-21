@@ -1,20 +1,76 @@
-var router = require('express').Router()
+var express=require('express')
+var router = express.Router()
 var bcrypt = require('bcryptjs')
 var jwt = require('jwt-simple')
 var User = require('../../models/user')
+var Counter = require('../../models/counter')
 var config = require('../../config')
 
+var speakeasy = require('speakeasy');
+
+var twilio_client = require('twilio')(config.twilio_acc_sid, config.twilio_auth_token)
 var ObjectID = require('mongodb').ObjectID;
+
+/*var flash 			= require('express-flash-notification')
+var cookieParser	= require('cookie-parser')
+var session			= require('express-session')
+var app=express()
+app.use(cookieParser('secret'))
+app.use(session({secret: 'a4f8071f-c873-4447-8ee2',
+   cookie: { maxAge: 2628000000 }}))
+app.use(flash(app))*/
+//var app=express()
+
 /*var api_key = '6bc114a36130ce2ce1f1c149e03ea93f'
 var from_who = 'ssivanatarajan@mailgun.com'*/
+/*router.get('/forgotPassword/:mobileNo',function(req,res,next){
+	console.log('forgot_pwd','in')
+	var mobileNo=req.params.mobileNo
+
+	var code = speakeasy.totp({key: 'abc123'});
+	User.find({mobile:mobileNo}).count(function(err,count){
+		if(count==1)
+		twilio_client.sendSms({
+        to: mobileNo,
+        from: config.twilio_no,
+        body: 'OTP for reset the password: ' + code
+    }, function(twilioerr, responseData) {
+      if (twilioerr) { 
+      	console.log('twilioerr',twilioerr)
+       //user.remove({'mobile':mobile_no}, function(remerr) {if (remerr) { throw remerr; }});
+        //socket.emit('update', {message: "Invalid phone number!"});
+      } else {
+      	console.log('code','code_generated')
+      	 console.log('registered successfully')
+         //res.send(201)
+        //socket.emit('code_generated');
+        User.findOne({mobile:mobileNo},function(err,user){
+        	if(!err)
+        	{
+        		user.resetPasswordOTP=code
+        		user.resetPasswordOTPExpires=new Date() +3600000
+        		user.save()
+			}
+        })
+      }
+    });
+		else if(count==0)
+			;
+})
+	
+})*/
+
 router.get('/:checkAvailabilityType',function (req,res,next) {
   // body...
+ 
+
+
   var checkType=req.params.checkAvailabilityType
    if(checkType)
   {
     
     var value=req.query.value
-    console.log(checkType)
+    console.log('checkType',checkType)
    if(checkType=='username')
    {
     User.find({username:value}).count(function(err,count)
@@ -116,7 +172,9 @@ router.get('/', function (req, res, next) {
 else
 {
 if (!req.headers['x-auth']) {
+    
     return res.send(401)
+
   }
   else
   {
@@ -134,25 +192,56 @@ if (!req.headers['x-auth']) {
 }
  
 })
-
+function counter(counterName) {
+var ret = Counter.findOneAndUpdate({name:counterName}, {$inc : {next:1}},function(err,d){
+// ret == { “_id” : “users”, “next” : 1 }
+console.log(d.next)
+return d.next;
+})
+}
 
 router.post('/', function (req, res, next) {
-  console.log("reg post",req.body.mobile)
 
-  var user = new User({username: req.body.username,email:req.body.email,mobile:req.body.mobile,dob:req.body.dob})
+  console.log("reg post",req.body.mobile)
+  var code = speakeasy.totp({key: 'abc123'});
+  var mobile_no=req.body.mobile
+  var user = new User({username: req.body.username,empId:req.body.empId,email:req.body.email,mobile:mobile_no,dob:req.body.dob})
   bcrypt.genSalt(10, function(err, salt) {
     bcrypt.hash(req.body.password, salt, function(err, hash) {
     if (err) { console.log(err) }
     user.password = hash
-    user.save(function (err) {
-      if (err) { console.log(err) }
-        else{
-          console.log('registered successfully')
-          res.send(201)
-    }
+
+   // user.userId=counter('Users')
+    console.log('userid',user.userId)
+    Counter.findOneAndUpdate({name:'Users'}, {$inc : {next:1}},function(err,d){
+      
+        user.userId=d.next
+      user.save(function (err) {
+       if (err) { console.log(err) }
+       /* else{
+        twilio_client.sendSms({
+        to: mobile_no,
+        from: config.twilio_no,
+        body: 'Your verification code  is: ' + code
+    }, function(twilioerr, responseData) {
+      if (twilioerr) { 
+      	console.log('twilioerr',twilioerr)
+       user.remove({'mobile':mobile_no}, function(remerr) {if (remerr) { throw remerr; }});
+        //socket.emit('update', {message: "Invalid phone number!"});
+      }*/ else {
+      	console.log('code','code_generated')
+      	 console.log('registered successfully')
+      	console.log('saved userid',user.userId)
+        res.send(201)
+        //socket.emit('code_generated');
+      }
+    })
+    });
+         
+    
     })
   })
-})
+
 })
 
 module.exports = router

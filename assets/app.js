@@ -2,7 +2,7 @@ angular.module('app',
 	['ngRoute','ngMaterial','ngAria','ng','ngAnimate']
 	);
 angular.module('app')
-.controller('ApplicationCtrl', function ($scope,$window,UserSvc) {
+.controller('ApplicationCtrl', function ($scope,$window,UserSvc,AppsSvc) {
  
  if($window.localStorage && $window.localStorage.getItem('token'))
     {
@@ -29,6 +29,7 @@ angular.module('app')
     console.log("currentUser"+$scope.currentUser)
     console.log("ApplicationCtrl",user);
   })
+  
   $scope.logout=function(){
   	UserSvc.logout()
   	$scope.currentUser="";
@@ -38,8 +39,59 @@ angular.module('app')
   }
 })
 angular.module('app')
+.controller('AddAppsCtrl',function($scope,AppsSvc,$window){
+console.log('AddAppsCtrl','AddAppsCtrl')
+$scope.getTowers=function(){
+	console.log('getTowers')
+	console.log('AppsSvc',AppsSvc)
+AppsSvc.getTowers().then(function(res)
+{
+	console.log('towerRes',res.data)
+	$scope.towers=res.data
+	console.log(res)
+})
+}
+//$scope.getTowers();	
+console.log('selected-tower',$scope.tower)
+$scope.addApplication=function(appname,alias,category,tower){
+	console.log('addapp-data',appname+' '+alias+' '+category+' '+tower);
+	AppsSvc.addApplication(appname,alias,category,tower).then(function(res)
+	{
+		console.log('addapp',res)
+	})
+}
+})
+angular.module('app')
+.service('AppsSvc',function($http,$window){
+	
+	console.log('AppsSvc')
+	this.getTowers=function()
+	{
+		return $http.get('api/towers').then(function(data)
+		{
+			console.log('getTowers',data)
+			return data;
+		},function(err){
+			console.log('getTowers',err)
+		})
+	}
+
+	this.addApplication=function(appname,alias,category,tower)
+	{
+		return $http.post('api/apps',{appname:appname,alias:alias,category:category,tower:tower}).then(function(res){
+			return res
+			
+		},function(err){
+			console.log('addapp-err',err)
+		}
+		)
+	}
+})
+angular.module('app')
 .controller('LoginCtrl', function ($scope, UserSvc,$mdToast) {
   $scope.login = function (username, password) {
+  	/* var message = '<strong>Well done!</strong> You successfully read this important alert message.';
+    Flash.create('success', message);*/
     UserSvc.login(username, password)
     .then(function (response) {
     	//var res=angular.fromJson(response);
@@ -58,19 +110,61 @@ angular.module('app')
       console.log("LoginCtrl err"+response.status);
       if(response.status==401)
       {
+      	//alert("invalid")
+      	var message = '<strong> Oops!</strong>  Invalid Username or password.';
+
+    	$('#Flash_message').css({'box-shadow':'0 0 30px black','text-align':'center','padding-top':'2px','padding-bottom':'2px'}).html(message).addClass('alert-danger').show().delay(30000).fadeOut();
+
+    	//var id = Flash.create('danger', message, 0, { id: 'flash-msg-id'}, true);
         $scope.username=""
         $scope.password=""
-        $mdToast.show(
+        /*$mdToast.show(
                      $mdToast.simple()
                         .textContent('Invalid username or password').position('top right')                      
-                        .hideDelay(5000))
-      }
+                        .hideDelay(5000))*/
+       }
+       else
+       {
+       	var message = '<strong> welcome!</strong>  successfully logged in.';
+    	$('#Flash_message').html(message).addClass('alert-success').show().delay(30000).fadeOut();
+    	
+       }
+
     })
    
   }
-
+ 
+$scope.forgotPassword=function(mobileNo)
+{
+	UserSvc.forgotPassword(mobileNo).then(function(response){
+		console.log('forgot_pwd',response)
+	},function(err)
+	{
+		console.log('forgot_pwd_err',err)
+	})
+}
  
 })
+angular.module('app').directive('passwordCheck',function(){
+	
+	return{
+		 require: 'ngModel',
+      link: function (scope, elem, attrs, ctrl) {
+        var firstPassword = '#' + attrs.passwordCheck;
+        console.log('firstPassword',firstPassword)
+        console.log('elem',elem)
+        $(elem).add(firstPassword).on('keyup', function () {
+          scope.$apply(function () {
+          	console.log('pwcheck','in apply')
+            var v = elem.val()===$(firstPassword).val();
+            console.log("val",v);
+            ctrl.$setValidity('pwmatch', v);
+          });
+        });
+      }
+    }
+	}
+)
 angular.module('app').controller('PostsCtrl', function ($scope,$rootScope,$filter,$q,PostsSvc,UserSvc) {
 var userid
 console.log('UserSvc in postctrl',UserSvc.currentUser)
@@ -132,7 +226,7 @@ $scope.$on('ws:new_post', function (_, post) {
       $scope.addPost = function () {
 
         // Only add a post if there is a body
-        console.log('userid',userid)
+        userid=$scope.currentUser._id;
       if($scope.postBody)
         PostsSvc.create({
       userid: userid,
@@ -418,21 +512,48 @@ angular.module('app').directive('postitem',function(){
     })
   }
 });
+angular.module('app')
+.controller('ProfileCtrl',function($scope,UserSvc,$window){
+
+	
+		 $scope.getProfile= function(){
+		 	UserSvc.getProfile($scope.currentUser._id).then(function(res)
+		{
+			console.log('profile-res',res)
+			$scope.profile_username=res.data.username
+			$scope.profile_email=res.data.email
+			$scope.profile_mobile=res.data.mobile
+			$scope.profile_dob=res.data.dob
+			$scope.profile_tower=res.data.tower
+			$scope.profile_manager=res.data.manager
+		})
+		 }
+	
+})
 angular.module('app').
-controller('RegisterCtrl',function($scope,UserSvc,$window,$mdToast)
+controller('RegisterCtrl',function($scope,UserSvc,$window)
 {
-$scope.register=function(username,password,mobile,email,dob)
+$scope.register=function(username,empId,password,mobile,email,dob)
 {
-	UserSvc.register(username,password,mobile,email,dob).then(function(res)
+	UserSvc.register(username,empId,password,mobile,email,dob).then(function(res)
 	{
 		console.log("reg",res);
 		if(res.status==201)
 		{
-			$mdToast.show(
+			var message = '<strong> Welcome!</strong>  successfully Registered.';
+    	$('#Flash_message').html(message).addClass('alert-success').show().delay(30000).fadeOut();
+    	
+			
+
+			/*$mdToast.show(
                      $mdToast.simple()
                         .textContent('successfully !').position('top right')                      
-                        .hideDelay(5000))
-			window.location.href='./#/login'
+                        .hideDelay(5000))*/
+			UserSvc.login(username,password).then(function(responseData){
+				$scope.$emit('login', responseData.data)
+				window.location.href='./'
+			})
+			//window.location.href='./#/login'
 
 
 		}
@@ -523,7 +644,11 @@ $locationProvider.html5Mode({
 });
 $routeProvider.when('/',{controller:'PostsCtrl',templateUrl:'posts.html'})
 .when('/register',{controller:'RegisterCtrl',templateUrl:'register.html'})
-.when('/login',{controller:'LoginCtrl',templateUrl:'login.html'});
+.when('/login',{controller:'LoginCtrl',templateUrl:'login.html'})
+.when('/forgotPassword',{controller:'LoginCtrl',templateUrl:'forgotPassword.html'})
+.when('/profile',{controller:'ProfileCtrl',templateUrl:'profile.html'})
+.when('/addApps',{controller:'AddAppsCtrl',templateUrl:'addApps.html'});
+
 
 })
 angular.module('app')
@@ -540,6 +665,18 @@ angular.module('app')
     })
   }
 
+  svc.getProfile=function(userid)
+  {
+    console.log('get','profile')
+    return $http.get('api/profile',{params:{userid:userid}}).then(function(val){
+      console.log('profile',val);
+      console.log('profile',val.data);
+      return val
+
+    },function(err){
+      console.log('profile',err);
+    })
+  }
   svc.getUsername=function(userid)
   {
     return $http.get('/api/users',{params:{userid:userid}}).then(function(val){
@@ -559,16 +696,17 @@ angular.module('app')
       return svc.getUser(svc.token)
     })
   }
-   svc.register=function(username,password,email,mobile,dob)
+   svc.register=function(username,empId,password,email,mobile,dob)
     {
       console.log("user Svc Reg")
-    return $http.post('/api/users',{username:username,password:password,email:email,mobile:mobile,dob:dob}).then(function(val){
+    return $http.post('/api/users',{username:username,empId:empId,password:password,email:email,mobile:mobile,dob:dob}).then(function(val){
       console.log("user reg",val)
       return val
 
     })
   }
   svc.logout=function(){
+    alert("logout")
     svc.token=""
     $window.localStorage.clear()
   }
@@ -583,6 +721,15 @@ svc.checkAvailabilty=function(type,value)
   function (error) {
     // body...
     console.log(error)
+  })
+}
+
+svc.forgotPassword=function(mobileNo)
+{
+  return $http.get('/api/forgotPassword',{params:{mobileNo:mobileNo}}).then(function(val){
+    console.log('val',val)
+  },function(err){
+    console.log('err',err)
   })
 }
 

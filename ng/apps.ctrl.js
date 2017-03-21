@@ -1,0 +1,23 @@
+angular.module('app')
+.controller('AddAppsCtrl',function($scope,AppsSvc,$window){
+console.log('AddAppsCtrl','AddAppsCtrl')
+$scope.getTowers=function(){
+	console.log('getTowers')
+	console.log('AppsSvc',AppsSvc)
+AppsSvc.getTowers().then(function(res)
+{
+	console.log('towerRes',res.data)
+	$scope.towers=res.data
+	console.log(res)
+})
+}
+//$scope.getTowers();	
+console.log('selected-tower',$scope.tower)
+$scope.addApplication=function(appname,alias,category,tower){
+	console.log('addapp-data',appname+' '+alias+' '+category+' '+tower);
+	AppsSvc.addApplication(appname,alias,category,tower).then(function(res)
+	{
+		console.log('addapp',res)
+	})
+}
+})
