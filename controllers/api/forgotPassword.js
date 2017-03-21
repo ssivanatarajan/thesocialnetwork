@@ -4,7 +4,7 @@ var jwt = require('jwt-simple')
 var User = require('../../models/user')
 var config = require('../../config')
 var speakeasy = require('speakeasy');
-var flash = require('express-flash');
+
 var twilio_client = require('twilio')(config.twilio_acc_sid, config.twilio_auth_token)
 var ObjectID = require('mongodb').ObjectID;
 /*var api_key = '6bc114a36130ce2ce1f1c149e03ea93f'
