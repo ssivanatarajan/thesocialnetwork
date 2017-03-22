@@ -2,16 +2,17 @@ angular.module('app',
 	['ngRoute','ngMaterial','ngAria','ng','ngAnimate']
 	);
 angular.module('app')
-.controller('ApplicationCtrl', function ($scope,$window,UserSvc,AppsSvc) {
+.controller('ApplicationCtrl', function ($scope,$rootScope,$window,UserSvc) {
  
  if($window.localStorage && $window.localStorage.getItem('token'))
     {
       UserSvc.getUser($window.localStorage.token).then(function(response)
       {
-      	UserSvc.currentUser=response.data
+      	UserSvc.setCurrentUser(response.data)
         $scope.currentUser=response.data
+        //$rootScope.currentUser=response.data
       	console.log($window.localStorage.token)
-      console.log("remember",UserSvc.currentUser)
+      console.log("remember",UserSvc.CurrentUser)
       })
       
     }
@@ -20,21 +21,22 @@ angular.module('app')
 
   $scope.$on('login', function ( event,user) {
   	console.log("ApplicationCtrl" ,user)
-    $scope.currentUser = user
-    UserSvc.currentUser=user
-     
+    $scope.currentUser =user
+    UserSvc.setCurrentUser(user)
+     $rootScope.currentUser=user
      $window.location.href='./'
+     $window.localStorage.setItem('currentUser',user);
     //var res=JSON.stringify(user)
     //console.log("ApplicationCtrl res"+res.data);
-    console.log("currentUser"+$scope.currentUser)
+    console.log("currentUser",UserSvc.CurrentUser)
     console.log("ApplicationCtrl",user);
   })
   
   $scope.logout=function(){
   	UserSvc.logout()
-  	$scope.currentUser="";
-    UserSvc.currentUser="";
-  	console.log("currentUser"+$scope.currentUser)
+  $scope.currentUser="";
+    UserSvc.setCurrentUser(null)
+  	console.log("currentUser",UserSvc.CurrentUser)
   	window.location.href='/#/login'
   }
 })
@@ -161,18 +163,10 @@ angular.module('app').directive('passwordCheck',function(){
     }
 	}
 )
-angular.module('app').controller('PostsCtrl', function ($scope,$rootScope,$filter,$q,PostsSvc,UserSvc) {
-var userid
-console.log('UserSvc in postctrl',UserSvc.currentUser)
-if(UserSvc.currentUser){
-   userid=UserSvc.currentUser._id;
-	console.log('userid from UserSvc',userid)
-}
-if($scope.currentUser)
-{
-	userid=$scope.currentUser._id;
-	console.log('userid from scope',userid)
-}
+angular.module('app').controller('PostsCtrl', function ($window,$scope,$rootScope,$filter,$q,PostsSvc,UserSvc) {
+
+var userid;
+
 $scope.$on('ws:new_post', function (_, post) {
   $scope.$apply(function () {
   	UserSvc.getUsername(post.userid).then(function(res){
@@ -190,39 +184,11 @@ $scope.$on('ws:new_post', function (_, post) {
 })
 
 
-/*$scope.auto_grow= function (msg,$event) {
-  	//console.log('element',element)
-  	element=event.target
-  	
-    element.style.height = "10px";
-    element.style.height = (element.scrollHeight)+"px";
-}*/
-/*$scope.$on('ws:new_comment',function(_,comment){
-	$scope.$apply(function(){
-		comment.username=$scope.currentUser.username;
-		var post=$filter('filter')($scope.posts,{_id:comment.postID},true)[0];
-		var commentedPostIndex=$scope.posts.indexOf(post)
-		
-		var cmnt={}
-		cmnt.comment=comment.comment;
-		cmnt.commentedby=comment.commentedby;
-		if($scope.posts[commentedPostIndex].comments==undefined)
-			{	console.log('comments','undefined')
-			$scope.posts[commentedPostIndex].comments=[]
-		}
-		var modposts=$scope.posts
-		modposts[commentedPostIndex].comments.unshift(cmnt)
-		console.log('commentedPost',$scope.posts[commentedPostIndex])
-		//$scope.posts[commentedPostIndex]=commentedPost;
-		$scope.posts=modposts
-
-	})
-})*/
       // the function runs when the "Add Post" button is clicked
       $scope.addPost = function () {
 
         // Only add a post if there is a body
-        userid=$scope.currentUser._id;
+    //    userid=$scope.currentUser._id;
       if($scope.postBody)
         PostsSvc.create({
       userid: userid,
@@ -268,40 +234,48 @@ $scope.$on('ws:new_post', function (_, post) {
         		console.log('likesstatshf',res);
         })
   }*/
+$scope.init=function(){
+//console.log("current user loc",$window.localStorage.getItem('currentUser'))
+console.log("currentUser UserSvc",UserSvc.getCurrentUser())
+//console.log("currentUser rootscope",$rootScope.currentUser)
+ userid=UserSvc.getCurrentUser()
 
+console.log('UserSvc userid',userid)
+}
   PostsSvc.fetch()
 	.success(function (posts) {
-  	$scope.posts=posts;
+  	//$scope.posts=posts;
+  	$scope.init();
     console.log('posts',posts)
    var modifiedPosts=[];
-    //for (var i=0; i < posts.length; i++) {
+   
       var promises=[];
       posts.forEach(function(post){
-        //var post=posts[i];
+       
         console.log('userid',post.userid)
       promises.push( UserSvc.getUsername(post.userid).then(function(res){
           var username=res.username;
           post.username=username;
-          console.log('username',username);  
+          console.log('post username',username);  
         }))
       console.log('userid',userid)
       if(userid !== undefined){
        promises.push( PostsSvc.getIsLiked(post._id,userid).then(function(res){
           console.log('postsvc-getIsLiked'+post._id,res.data.isliked);
           if(res.data.isliked=='True')
-            {console.log('post like','true')
+            {//console.log('post like','true')
             post.isliked='True'
           }
           else
           {
             post.isliked='False'
-            console.log('post like','false')
+           // console.log('post like','false')
           }
           modifiedPosts.push(post)
-          console.log('modify-post',post)
+          //console.log('modify-post',post)
         }))
        promises.push(PostsSvc.likesstats(post._id,userid).then(function(likesstatsRes){
-       	console.log('likesstats',likesstatsRes);
+       	//console.log('likesstats',likesstatsRes);
         	post.likes=likesstatsRes.data.noOfLikes
         	var LikedBY=''
         	if(likesstatsRes.data.recentlyLikedUserName !=='none')
@@ -321,12 +295,12 @@ $scope.$on('ws:new_post', function (_, post) {
         
 })
       $q.all(promises).then(function(){
-        if(userid !== undefined){
+        
          console.log('modifiedposts',modifiedPosts)
         
         $scope.posts = modifiedPosts
         console.log('posts',$scope.posts)
-      }
+      
       })
      
       //  console.log('username',data.value);  
@@ -359,14 +333,15 @@ angular.module('app').directive('postitem',function(){
 	//directive.template='<div>{{obj.username}}</div>'
 	directive.replace='true'
 	directive.link= function(scope, element, attrs) {
-		scope.postObj = eval('(' + scope.postdata + ')');
+	  console.log("postobj",scope.postdata)	
+	  scope.postObj = eval('(' + scope.postdata + ')');
 	  console.log('directive link',scope.postObj)
 	  console.log(scope)
 	  console.log(attrs)
 	  
 	}
   directive.controller=function($scope,$element,UserSvc,PostsSvc){
-  	var userid=UserSvc.currentUser._id;
+  	var userid=UserSvc.CurrentUser._id;
 
   	$scope.like=function(post)
       {
@@ -428,7 +403,7 @@ angular.module('app').directive('postitem',function(){
 		console.log('post.newComment',post.newComment)
     if(post.newComment)
     {
-      var username=UserSvc.currentUser.username;
+      var username=UserSvc.CurrentUser.username;
 		PostsSvc.addComment(post._id,post.newComment,userid,username).then(function(res){
  			console.log(res)
  			if(res.data.msg=='comment posted successfully')
@@ -651,7 +626,7 @@ angular.module('app')
 .service('UserSvc', function ($http,$window) {
   var svc = this
   
-  svc.CurrentUser=null
+  svc.CurrentUser;
   svc.getUser = function (auth) {
     $http.defaults.headers.common['X-Auth'] = auth
     return $http.get('/api/users').then(function(val){
@@ -672,7 +647,7 @@ angular.module('app')
     },function(err){
       console.log('profile',err);
     })
-  }
+  }////
   svc.getUsername=function(userid)
   {
     return $http.get('/api/users',{params:{userid:userid}}).then(function(val){
@@ -689,7 +664,9 @@ angular.module('app')
       
       //console.log("return "+ svc.getUser())
      $window.localStorage.setItem('token',svc.token)
-      return svc.getUser(svc.token)
+     //svc.CurrentUser=svc.getUser(svc.token)
+    //console.log("svc.CurrentUser",svc.CurrentUser)
+      return svc.getUser(svc.token);
     })
   }
    svc.register=function(username,empId,password,email,mobile,dob)
@@ -728,6 +705,16 @@ svc.forgotPassword=function(mobileNo)
     console.log('err',err)
   })
 }
+svc.getCurrentUser=function()
+{
+  console.log("getCurrentUser",svc.CurrentUser);
+  return svc.CurrentUser
+ }
+ svc.setCurrentUser=function(currentuser)
+ {
+  console.log("setCurrentUser",currentuser);
+  svc.CurrentUser=currentuser;
+ }
 
 })
 angular.module('app')

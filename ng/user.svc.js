@@ -2,7 +2,7 @@ angular.module('app')
 .service('UserSvc', function ($http,$window) {
   var svc = this
   
-  svc.CurrentUser=null
+  svc.CurrentUser;
   svc.getUser = function (auth) {
     $http.defaults.headers.common['X-Auth'] = auth
     return $http.get('/api/users').then(function(val){
@@ -23,7 +23,7 @@ angular.module('app')
     },function(err){
       console.log('profile',err);
     })
-  }
+  }////
   svc.getUsername=function(userid)
   {
     return $http.get('/api/users',{params:{userid:userid}}).then(function(val){
@@ -40,7 +40,9 @@ angular.module('app')
       
       //console.log("return "+ svc.getUser())
      $window.localStorage.setItem('token',svc.token)
-      return svc.getUser(svc.token)
+     //svc.CurrentUser=svc.getUser(svc.token)
+    //console.log("svc.CurrentUser",svc.CurrentUser)
+      return svc.getUser(svc.token);
     })
   }
    svc.register=function(username,empId,password,email,mobile,dob)
@@ -79,5 +81,15 @@ svc.forgotPassword=function(mobileNo)
     console.log('err',err)
   })
 }
+svc.getCurrentUser=function()
+{
+  console.log("getCurrentUser",svc.CurrentUser);
+  return svc.CurrentUser
+ }
+ svc.setCurrentUser=function(currentuser)
+ {
+  console.log("setCurrentUser",currentuser);
+  svc.CurrentUser=currentuser;
+ }
 
 })

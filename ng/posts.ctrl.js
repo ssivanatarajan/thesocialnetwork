@@ -1,15 +1,7 @@
-angular.module('app').controller('PostsCtrl', function ($scope,$rootScope,$filter,$q,PostsSvc,UserSvc) {
-var userid
-console.log('UserSvc in postctrl',UserSvc.currentUser)
-if(UserSvc.currentUser){
-   userid=UserSvc.currentUser._id;
-	console.log('userid from UserSvc',userid)
-}
-if($scope.currentUser)
-{
-	userid=$scope.currentUser._id;
-	console.log('userid from scope',userid)
-}
+angular.module('app').controller('PostsCtrl', function ($window,$scope,$rootScope,$filter,$q,PostsSvc,UserSvc) {
+
+var userid;
+
 $scope.$on('ws:new_post', function (_, post) {
   $scope.$apply(function () {
   	UserSvc.getUsername(post.userid).then(function(res){
@@ -27,39 +19,11 @@ $scope.$on('ws:new_post', function (_, post) {
 })
 
 
-/*$scope.auto_grow= function (msg,$event) {
-  	//console.log('element',element)
-  	element=event.target
-  	
-    element.style.height = "10px";
-    element.style.height = (element.scrollHeight)+"px";
-}*/
-/*$scope.$on('ws:new_comment',function(_,comment){
-	$scope.$apply(function(){
-		comment.username=$scope.currentUser.username;
-		var post=$filter('filter')($scope.posts,{_id:comment.postID},true)[0];
-		var commentedPostIndex=$scope.posts.indexOf(post)
-		
-		var cmnt={}
-		cmnt.comment=comment.comment;
-		cmnt.commentedby=comment.commentedby;
-		if($scope.posts[commentedPostIndex].comments==undefined)
-			{	console.log('comments','undefined')
-			$scope.posts[commentedPostIndex].comments=[]
-		}
-		var modposts=$scope.posts
-		modposts[commentedPostIndex].comments.unshift(cmnt)
-		console.log('commentedPost',$scope.posts[commentedPostIndex])
-		//$scope.posts[commentedPostIndex]=commentedPost;
-		$scope.posts=modposts
-
-	})
-})*/
       // the function runs when the "Add Post" button is clicked
       $scope.addPost = function () {
 
         // Only add a post if there is a body
-        userid=$scope.currentUser._id;
+    //    userid=$scope.currentUser._id;
       if($scope.postBody)
         PostsSvc.create({
       userid: userid,
@@ -105,40 +69,48 @@ $scope.$on('ws:new_post', function (_, post) {
         		console.log('likesstatshf',res);
         })
   }*/
+$scope.init=function(){
+//console.log("current user loc",$window.localStorage.getItem('currentUser'))
+console.log("currentUser UserSvc",UserSvc.getCurrentUser())
+//console.log("currentUser rootscope",$rootScope.currentUser)
+ userid=UserSvc.getCurrentUser()
 
+console.log('UserSvc userid',userid)
+}
   PostsSvc.fetch()
 	.success(function (posts) {
-  	$scope.posts=posts;
+  	//$scope.posts=posts;
+  	$scope.init();
     console.log('posts',posts)
    var modifiedPosts=[];
-    //for (var i=0; i < posts.length; i++) {
+   
       var promises=[];
       posts.forEach(function(post){
-        //var post=posts[i];
+       
         console.log('userid',post.userid)
       promises.push( UserSvc.getUsername(post.userid).then(function(res){
           var username=res.username;
           post.username=username;
-          console.log('username',username);  
+          console.log('post username',username);  
         }))
       console.log('userid',userid)
       if(userid !== undefined){
        promises.push( PostsSvc.getIsLiked(post._id,userid).then(function(res){
           console.log('postsvc-getIsLiked'+post._id,res.data.isliked);
           if(res.data.isliked=='True')
-            {console.log('post like','true')
+            {//console.log('post like','true')
             post.isliked='True'
           }
           else
           {
             post.isliked='False'
-            console.log('post like','false')
+           // console.log('post like','false')
           }
           modifiedPosts.push(post)
-          console.log('modify-post',post)
+          //console.log('modify-post',post)
         }))
        promises.push(PostsSvc.likesstats(post._id,userid).then(function(likesstatsRes){
-       	console.log('likesstats',likesstatsRes);
+       	//console.log('likesstats',likesstatsRes);
         	post.likes=likesstatsRes.data.noOfLikes
         	var LikedBY=''
         	if(likesstatsRes.data.recentlyLikedUserName !=='none')
@@ -158,12 +130,12 @@ $scope.$on('ws:new_post', function (_, post) {
         
 })
       $q.all(promises).then(function(){
-        if(userid !== undefined){
+        
          console.log('modifiedposts',modifiedPosts)
         
         $scope.posts = modifiedPosts
         console.log('posts',$scope.posts)
-      }
+      
       })
      
       //  console.log('username',data.value);  

@@ -13,14 +13,15 @@ angular.module('app').directive('postitem',function(){
 	//directive.template='<div>{{obj.username}}</div>'
 	directive.replace='true'
 	directive.link= function(scope, element, attrs) {
-		scope.postObj = eval('(' + scope.postdata + ')');
+	  console.log("postobj",scope.postdata)	
+	  scope.postObj = eval('(' + scope.postdata + ')');
 	  console.log('directive link',scope.postObj)
 	  console.log(scope)
 	  console.log(attrs)
 	  
 	}
   directive.controller=function($scope,$element,UserSvc,PostsSvc){
-  	var userid=UserSvc.currentUser._id;
+  	var userid=UserSvc.CurrentUser._id;
 
   	$scope.like=function(post)
       {
@@ -82,7 +83,7 @@ angular.module('app').directive('postitem',function(){
 		console.log('post.newComment',post.newComment)
     if(post.newComment)
     {
-      var username=UserSvc.currentUser.username;
+      var username=UserSvc.CurrentUser.username;
 		PostsSvc.addComment(post._id,post.newComment,userid,username).then(function(res){
  			console.log(res)
  			if(res.data.msg=='comment posted successfully')
